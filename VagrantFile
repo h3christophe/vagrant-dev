@@ -50,7 +50,7 @@ Vagrant.configure("2") do |config|
     config.ssh.insert_key       = false
    
     # sync folders - default
-    config.vm.synced_folder "./provisioners", "/vagrant_provisioners", id: "provisioners"
+    config.vm.synced_folder "./provisioners", "/vagrant_provisioners", id: "provisioners", type: "nfs"
     
     # host manager default settings.
     # ==============================
@@ -114,13 +114,13 @@ SCRIPT
             # Sync Folders
             # ============
             guest_www_folder = "/var/www/"+hostname
-            node.vm.synced_folder source_www, guest_www_folder, id: "www"
+            node.vm.synced_folder source_www, guest_www_folder, id: "www", :nfs => true
             
             syncFolders = settings['sync'] ?  settings['sync'] : false
             if(syncFolders)
                 syncFolders.each do |folder_info|
                     #print folder_info
-                    node.vm.synced_folder folder_info['host'], folder_info['guest'], id: folder_info['id']
+                    node.vm.synced_folder folder_info['host'], folder_info['guest'], id: folder_info['id'], :nfs => true
                 end
             end
 
