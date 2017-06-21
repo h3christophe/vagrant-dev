@@ -93,11 +93,10 @@ Default Roles are
 
 ## Machine Configuration 
 
-
-
 | Name                   | Description                                                                                                                                                 |
 |------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | name                   | Box name                                                                                                                                                    |
+| enabled                | True/ False - Set to false to ignore this machine                                                                                                                                                    |
 | box                    | What Vagrant Machine to use                                                                                                                                 |
 | box_memory             | Memory assigned to the box                                                                                                                                  |
 | box_cpus               | Number of Cpus Assigned to the box                                                                                                                          |
