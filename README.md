@@ -8,6 +8,18 @@ http://vagrantmanager.com/
 
 ## How to
 
+### Install
+
+Install VirtualBox and Vagrant
+
+#### Vagrant Plugin
+
+This vagrantfile rely on plugins, you need to install them
+
+- vagrant-hostmanager
+- vagrant-triggers
+- vagrant-auto_network
+
 
 ### Create your machine(s)
 
@@ -95,3 +107,11 @@ Default Roles are
 | ansible                | true/false if you want to use ansible to provision the box                                                                                                  |
 | ansible\_guest\_playbook | Path to the ansible playbook file - (In the Box - not host) 
 
+
+## Other Command
+
+Reload Host for all machines and host
+
+```
+vagrant hostmanager
+```
