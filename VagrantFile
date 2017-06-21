@@ -67,6 +67,10 @@ Vagrant.configure("2") do |config|
         boxName = settings['name'] ?  settings['name'] : File.basename(setting_file)
         source_www =  settings['source_www']
 
+        if settings['enabled'] === false 
+            next
+        end
+
         config.vm.define boxName do |node|
             node.vm.box = settings['box']
             node.vm.network :private_network, :auto_network => true

@@ -1,4 +1,5 @@
 name: boxName
+enabled: true
 
 # Box Setup
 box: bento/ubuntu-16.04
