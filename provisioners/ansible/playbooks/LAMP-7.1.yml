@@ -18,6 +18,7 @@
             - curl
             - xml
             - zip
+            - intl
       php_ini:
             - {section: "PHP", key: "error_reporting", value: E_ALL}
             - {section: "PHP", key: "display_errors", value: On}
