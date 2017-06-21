@@ -5,6 +5,11 @@
       server_packages: [git, vim, htop, curl]
       server_timezone: UTC
       server_locale: en_US.UTF-8
+          
+    - role: mysql
+      mysql_root_password: root
+      mysql_user: user
+      mysql_password: user
       
     - role: php
       php_version: '7.1'
