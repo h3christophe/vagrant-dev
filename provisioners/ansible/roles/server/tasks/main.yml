@@ -1,0 +1,22 @@
+---
+- name: Update apt
+  become: yes
+  apt: update_cache=yes
+
+- name: Install System Packages
+  become: yes
+  apt: pkg={{ item }} state=latest
+  with_items: "{{ ['curl', 'wget', 'python-software-properties'] + server_packages|default([])  }}"
+  when: server_packages is defined
+
+- name: Configure the timezone
+  become: yes
+  template: src=timezone.tpl dest=/etc/timezone
+
+- name: More Configure the timezone
+  become: yes
+  file: src=/usr/share/zoneinfo/{{server_timezone}} dest=/etc/localtime state=link force=yes backup=yes
+
+- name: Set default system language pack
+  shell: locale-gen {{server_locale}}
+  become: yes

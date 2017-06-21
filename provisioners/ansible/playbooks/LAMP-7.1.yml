@@ -1,0 +1,48 @@
+---
+- hosts: all
+  roles:
+    - role: server
+      server_packages: [git, vim, htop, curl]
+      server_timezone: UTC
+      server_locale: en_US.UTF-8
+      
+    - role: php
+      php_version: '7.1'
+      php_versions: ['7.1']
+      php_modules:  
+            - mbstring
+            - mcrypt
+            - mysql
+            - gd
+            - intl
+            - curl
+            - xml
+            - zip
+      php_ini:
+            - {section: "PHP", key: "error_reporting", value: E_ALL}
+            - {section: "PHP", key: "display_errors", value: On}
+            - {section: "opcache", key: "opcache.memory_consumption", value: 128}
+            - {section: "opcache", key: "opcache.interned_strings_buffer", value: 8}
+            - {section: "opcache", key: "opcache.max_accelerated_files", value: 4000}
+            - {section: "opcache", key: "opcache.revalidate_freq", value: 0}
+            - {section: "opcache", key: "opcache.fast_shutdown", value: 1}
+            - {section: "opcache", key: "opcache.enable_cli", value: 1}
+    
+    - role: composer
+      composer_self_update: true  
+      composer_install_github_oauth: false
+      
+    - role: apache
+      apache_public_folder: 'public'
+      #apache_virtual_host: 'ansible/vhost-test.conf.tpl'
+      apache_packages:
+            - libapache2-mod-php
+      apache_modules:
+            - rewrite
+            - vhost_alias
+            - headers
+            - expires
+            - filter
+      apache_conf_custom: false
+      apache_conf_enable: false
+      apache_conf_disable: false

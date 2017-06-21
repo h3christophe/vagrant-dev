@@ -1,0 +1,4 @@
+---
+composer_install_dir: /usr/local/bin
+composer_install_github_oauth: false
+composer_install_self_update: false

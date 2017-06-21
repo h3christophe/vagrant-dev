@@ -1,0 +1,11 @@
+---
+- hosts: all
+  become: true
+  vars_files:
+    - SITE_VARS
+  roles:
+    - { role: server, when: server.install == '1' }
+    - { role: apache, when: apache.install == '1' }
+    - { role: mysql, when: mysql.install == '1' }
+    - { role: php, when: php.install == '1' }
+    - composer

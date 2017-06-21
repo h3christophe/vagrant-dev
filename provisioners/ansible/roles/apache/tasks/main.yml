@@ -1,0 +1,119 @@
+---
+#- name: apache conf
+#  debug:
+#    msg: "{{ apache }}"
+  
+- name: Install Apache and packages
+  become: true
+  apt: pkg={{item}} state=latest
+  with_items: "{{ ['apache2'] + apache_packages|default([])  }}"
+  
+- name: Install Apache Modules
+  become: true
+  apache2_module: state=present name={{ item }}
+  notify: reload apache
+  with_items: "{{apache_modules}}"
+
+- name: Register apache Version
+  shell: apache2 -v
+  register: apache_version
+
+# ===============
+# Configurations
+# ===============
+# Check if the custom  ansible Conf file already exist in the configurations.
+- stat: path=/etc/apache2/conf-available/ansible-custom.conf
+  register: ansible_config_file
+
+# Check that the template file exists
+- name: Check if Custom Config File exits.
+  stat: 
+    path: "{{www_root}}/{{apache_conf_custom}}"
+  register: custom_config_file
+  when: apache_conf_custom != False
+
+- name: Check if custom configuration is valid
+  fail:
+    msg: "Cannot find Custom Configuration File {{www_root}}/{{apache_conf_custom}}"
+  when: custom_config_file.skipped is not defined and custom_config_file.stat.exists == false
+  
+# Upload the Custom Config File in the right directory
+- name: Create Apache configuration from Custom
+  become: true
+  template:
+    src: "{{www_root}}/{{apache_conf_custom}}"
+    dest: "/etc/apache2/conf-available/ansible-custom.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - reload apache
+  with_items: "{{ apache_conf_custom }}"
+  when: custom_config_file.skipped is not defined and custom_config_file.stat.exists == true
+  
+# Add the custom conf to the list of conf to enable if the variable is set
+- name: Adding ansible-custom to enable conf array
+  set_fact:
+    apache_conf_enable: "{{ apache_conf_enable|ternary(apache_conf_enable, []) + ['ansible-custom'] }}"
+  when: custom_config_file.skipped is not defined and custom_config_file.stat.exists == true
+
+ 
+# Add custom conf to the list to disable if the file exist on the server  but the variable is not set anymore 
+- name: Adding ansible-custom to disable conf array
+  set_fact:
+   apache_conf_disable: "{{ apache_conf_disable|ternary(apache_conf_disable, []) + ['ansible-custom'] }}"
+  when: custom_config_file.skipped is defined and ansible_config_file.stat.exists == true
+  
+#- name: apache conf disable
+#  debug:
+#    msg: "{{ apache_conf_disable }} {{custom_config_file.skipped is defined and ansible_config_file.stat.exists == true}}"
+
+#- name: apache conf enable
+#  debug:
+#    msg: "{{ apache_conf_enable }} {{custom_config_file.skipped is not defined and custom_config_file.stat.exists == true}}"
+
+# Enable / Disable Configurations.
+# Enable / Disable Apache Configurations 
+- name: Disable Apache Configuration
+  become: true
+  command:
+    "a2disconf {{ item }}"
+  register: a2disconf
+  changed_when: "'To activate the new configuration' in a2disconf.stdout"
+  notify:
+    - reload apache
+  with_items: "{{ apache_conf_disable }}"
+  when: apache_conf_disable != False and apache_conf_disable|length > 0
+
+- name: Enable Apache Configuration
+  become: true
+  command:
+    "a2enconf {{ item }}"
+  register: a2enconf
+  changed_when: "'To activate the new configuration' in a2enconf.stdout"
+  notify:
+    - reload apache
+  with_items: "{{ apache_conf_enable }}"
+  when: apache_conf_enable != False and apache_conf_enable|length > 0
+
+
+# ===============  
+# Set UP Virtual Host.
+# ===============
+- name: Create Site Virtual Host
+  become: true
+  template:
+    src: "{{apache_virtual_host| ternary(apache_virtual_host, 'vhost.conf.tpl')}}"
+    dest: "/etc/apache2/sites-available/ansible-site.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload apache
+    
+# Enable Site
+- name: Enable Virtual Host
+  become: true
+  command: "a2ensite ansible-site.conf"
+  register: a2ensite
+  changed_when: "'To activate the new configuration' in a2ensite.stdout"
+  notify: reload apache

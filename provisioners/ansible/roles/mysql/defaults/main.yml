@@ -1,0 +1,10 @@
+---
+mysql_root_password: root
+mysql_user: user
+mysql_password: user
+mysql_packages: 
+    - mysql-server
+    - mysql-client
+    - python-mysqldb
+mysql_dump_file: false
+mysql_database: false

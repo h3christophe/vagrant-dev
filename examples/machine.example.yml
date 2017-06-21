@@ -1,0 +1,30 @@
+name: boxName
+
+# Box Setup
+box: bento/ubuntu-16.04
+box_memory: 2048
+box_cpus: 2
+
+# SSH
+ssh_private: keys/id_rsa
+ssh_public: keys/id_rsa.pub
+
+# Hostname and Aliases
+hostname: box-hostname.dev
+aliases: 
+    - box-hostname-alias.dev
+   
+# Project Source. - Folder will be sync /var/www/[hostname]  
+source_www: /Users/yourUser/Projects/YourProject
+
+# Extra Sync Folders
+sync:
+  - host: /path/to/host/folder
+    guest: /guest/folder/path
+    id: unique-id
+    
+# Provisioning
+ansible: true
+# This is a Guest Folder Path.
+ansible_guest_playbook: /vagrant/examples/ansible/LAMP-7.1.yml
+#ansible_guest_playbook: /var/www/envoi.dev/ansible-playbook.yml

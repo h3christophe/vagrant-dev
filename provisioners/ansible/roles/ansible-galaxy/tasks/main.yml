@@ -1,0 +1,3 @@
+---
+- name: run ansible galaxy install
+  local_action: command ansible-galaxy install -r /vagrant/provisioners/ansible/requirements.yml -p /home/vagrant/ansible/roles/
