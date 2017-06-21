@@ -70,6 +70,7 @@ Default Roles are
 - Apache
 - Php
 - Mysql
+- Composer
 
 ### Other 
 
