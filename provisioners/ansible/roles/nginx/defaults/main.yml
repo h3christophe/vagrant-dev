@@ -1,0 +1,38 @@
+---
+# no need to be changed - used by other roles to check if apache was installed.
+nginx_installed: true
+
+nginx_packages: false
+
+nginx_public_folder: "public"
+
+nginx_installation_types_using_service: ["packages", "configuration-only"]
+nginx_installation_type: "packages"
+nginx_binary_name: "nginx"
+nginx_service_name: "{{nginx_binary_name}}"
+
+# Configs
+nginx_conf_dir: "{% if ansible_os_family == 'FreeBSD' %}/usr/local/etc/nginx{% else %}/etc/nginx{% endif %}"
+nginx_configs: {}
+# A list of hashes that define additional configuration
+#nginx_configs:
+#  proxy:
+#      - proxy_set_header X-Real-IP  $remote_addr
+#      - proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for
+#  upstream:
+#      - upstream foo { server 127.0.0.1:8080 weight=10; }
+#  geo:
+#      - geo $local {
+#          default 0;
+#          127.0.0.1 1;
+#        }
+#  gzip:
+#      - gzip on
+#      - gzip_disable msie6
+
+nginx_user: "{% if ansible_os_family == 'RedHat' or ansible_os_family == 'Suse' %}nginx{% elif ansible_os_family == 'Debian' %}www-data{% elif ansible_os_family == 'FreeBSD' %}www{% endif %}"
+nginx_group: "{{nginx_user}}"
+nginx_daemon_mode: "on"
+
+nginx_site_template: php-site.tpl
+

@@ -1,0 +1,16 @@
+---
+- name: Install PHP Switcher - Create target directory
+  file: 
+    path: /home/vagrant/scripts
+    state: directory
+    owner: vagrant
+  
+- name: Install PHP Switcher
+  template: 
+    src: phpSwitcher.tpl 
+    dest: /home/vagrant/scripts/phpSwitcher
+    owner: vagrant
+    mode: "a+x"
+    
+- name: Switch To PHP {{php_version}}
+  command: /home/vagrant/scripts/phpSwitcher {{php_version}}

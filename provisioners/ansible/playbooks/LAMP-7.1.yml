@@ -5,7 +5,22 @@
       server_packages: [git, vim, htop, curl]
       server_timezone: UTC
       server_locale: en_US.UTF-8
-          
+              
+    - role: apache
+      apache_public_folder: 'public'
+      #apache_virtual_host: 'ansible/vhost-test.conf.tpl'
+      apache_packages:
+            - libapache2-mod-php
+      apache_modules:
+            - rewrite
+            - vhost_alias
+            - headers
+            - expires
+            - filter
+      apache_conf_custom: false
+      apache_conf_enable: false
+      apache_conf_disable: false
+      
     - role: mysql
       mysql_root_password: root
       mysql_user: user
@@ -37,18 +52,4 @@
     - role: composer
       composer_self_update: true  
       composer_install_github_oauth: false
-      
-    - role: apache
-      apache_public_folder: 'public'
-      #apache_virtual_host: 'ansible/vhost-test.conf.tpl'
-      apache_packages:
-            - libapache2-mod-php
-      apache_modules:
-            - rewrite
-            - vhost_alias
-            - headers
-            - expires
-            - filter
-      apache_conf_custom: false
-      apache_conf_enable: false
-      apache_conf_disable: false
+     

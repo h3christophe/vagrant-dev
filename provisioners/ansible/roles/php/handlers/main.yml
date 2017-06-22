@@ -1,0 +1,19 @@
+# Restart FPM service.
+# sudo /usr/sbin/service php{{php_version}}-fpm restart
+
+
+- name: config changed
+  become: true
+  debug: msg="Config Changed"
+  changed_when: True
+  notify:
+    - restart fpm service
+
+
+- name: restart fpm service
+  become: true
+  service: 
+    name: "php{{php_version}}-fpm" 
+    enabled: yes 
+    state: restarted
+  when: "'fpm' in php_modules"

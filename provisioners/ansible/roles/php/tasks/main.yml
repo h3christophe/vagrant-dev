@@ -10,11 +10,9 @@
   become: true
   apt: update_cache=yes
 
-- name: Install PHP Versions
-  become: true
-  apt: pkg="php{{item}}" state=latest
-  with_items: "{{php_versions}}"
-  
+#- set_fact: php_packages="{% for version in php_versions %} {% for module in php_modules %}php{{version}}-{{module}} {%endfor%} php{{version}} {%endfor%}"     
+
+# Install Module First as If we install php  version first it will include apache module all the time
 - name: Install PHP Modules
   become: true
   apt: pkg="php{{item[0]}}-{{item[1]}}" state=latest
@@ -22,7 +20,17 @@
   with_nested:
     - "{{php_versions}}"
     - "{{php_modules}}"
-    
+ 
+- name: Install PHP Versions
+  become: true
+  apt: pkg="php{{item}}" state=latest
+  with_items: "{{php_versions}}"
+  
+#- name: Install PHP Versions
+#  become: true
+#  apt: pkg="php{{item}}-cli" state=latest
+#  with_items: "{{php_versions}}"
+  
 # always nuke the file.
 - name: Create/ Reset PHP Ini Options
   become: true
@@ -33,18 +41,20 @@
     owner: root
     mode: 0644
   with_nested:
-    - ["cli", "apache2"]
+    - "{{php_config_dirs}}"
     - "{{php_versions}}"
 
 #- name: Debug
 #  debug:
 #    msg: "/etc/php/{{item[1]}}/{{item[0]}}/conf.d/99-custom.ini"
 #  with_nested:
-#    - ["cli", "apache2"]
+#    - "{{php_config_dirs}}"
 #    - "{{php_versions}}"
       
 - name: Configure PHP
   become: true
+  notify:
+    - config changed
   ini_file:
     create: true
     owner: root
@@ -53,24 +63,8 @@
     section: "{{item[2].section}}"
     option: "{{item[2].key}}"
     value: "{{item[2].value}}"
-
   with_nested:
-    - ["cli", "apache2"]
+    - "{{php_config_dirs}}"
     - "{{php_versions}}"
-    - "{{php_ini}}"
-      
-- name: Install PHP Switcher - Create target directory
-  file: 
-    path: /home/vagrant/scripts
-    state: directory
-    owner: vagrant
-  
-- name: Install PHP Switcher
-  template: 
-    src: phpSwitcher.sh 
-    dest: /home/vagrant/scripts/phpSwitcher
-    owner: vagrant
-    mode: "a+x"
+    - "{{php_ini}}" 
     
-- name: Switch To PHP {{php_version}}
-  command: /home/vagrant/scripts/phpSwitcher {{php_version}}

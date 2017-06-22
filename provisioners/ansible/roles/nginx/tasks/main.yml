@@ -1,0 +1,78 @@
+---
+#- debug:
+#    msg: "{{ debug }}"
+  
+# Install NGINX
+
+- name: Make sure apache is not running
+  become: true
+  apt:
+    name: apache2
+    autoclean: yes
+    autoremove: yes
+    state: absent
+
+- name: Install NGINX and packages
+  become: true
+  apt: pkg={{item}} state=latest
+  with_items: "{{ ['nginx'] + nginx_packages| ternary (nginx_packages,  [] )  }}"
+  
+  
+  # Remove Defaults
+- name: Disable the default site
+  become: true
+  file:
+    path: "{{nginx_conf_dir}}/sites-enabled/default"
+    state: absent
+  notify:
+    - reload nginx
+
+- name: Remove the default configuration
+  become: true
+  file:
+    path: "{{nginx_conf_dir}}/conf.d/default.conf"
+    state: absent
+  when: >
+    'default' not in nginx_configs.keys()
+  notify:
+    - reload nginx
+  
+# configuration
+- name: Create the configurations files
+  become: true
+  template:
+    src: config.conf.tpl
+    dest: "{{ nginx_conf_dir }}/conf.d/{{ item.key }}.conf"
+  with_dict: "{{ nginx_configs }}"
+  notify:
+    - reload nginx
+    
+# Create Site Template
+- name: Create Site template
+  become: true
+  template:
+    src: "{{nginx_site_template}}"
+    dest: "{{ nginx_conf_dir }}/sites-available/ansible-site"
+  notify:
+    - reload nginx
+
+# Enable Site.
+- name: Enable Site.
+  become: true
+  file:
+    state: link
+    src: "{{ nginx_conf_dir }}/sites-available/ansible-site"
+    dest: "{{ nginx_conf_dir }}/sites-enabled/ansible-site"
+  notify:
+    - reload nginx
+    
+# Enable Site.
+- name: Disable Default Site.
+  become: true
+  file:
+    state: link
+    src: "{{ nginx_conf_dir }}/sites-available/ansible-site"
+    dest: "{{ nginx_conf_dir }}/sites-enabled/ansible-site"
+  notify:
+    - reload nginx
+    

@@ -7,14 +7,14 @@
   become: true
   apt: pkg={{ item }} state=latest
   with_items: "{{mysql_packages}}"
-
+  
 - name: Start the MySQL service
   become: true
   service: 
     name: mysql 
     state: started
     enabled: true
-
+  
 - name: update mysql root password for all root accounts
   become: true
   mysql_user: 
@@ -29,7 +29,7 @@
     - "{{ current_hostname.stdout | lower }}"
     - 127.0.0.1
     - ::1
-    - localhost 
+    - localhost
 
 - name: apache conf
   debug:
@@ -37,12 +37,8 @@
 
 - name: Create databases
   mysql_db: name={{ mysql_database }} state=present login_user=root login_password={{ mysql_root_password }}
-  when: mysql_database|default(false)|bool
+  when: mysql_database|default(false)
   
-- name: Import dump
-  mysql_db: name={{ mysql_database }} state=import login_user=root login_password={{ mysql_root_password }} target=/vagrant/{{ mysql_dump_file }}
-  when: mysql_dump_file|default(false)|bool
-
 - name: Ensure anonymous users are not in the database
   mysql_user: name='' host={{ item }} state=absent login_user=root login_password={{ mysql_root_password }}
   with_items:
@@ -51,4 +47,8 @@
 
 - name: Create users
   mysql_user: name={{ mysql_user }} password={{ mysql_password }} priv={{ mysql_database }}.*:ALL state=present login_user=root login_password={{ mysql_root_password }}
-  when: mysql_database|default(false)|bool
+  when: mysql_database|default(false)
+
+- name: Import dump
+  mysql_db: name={{ mysql_database }} state=import login_user=root login_password={{ mysql_root_password }} target=/vagrant/{{ mysql_dump_file }}
+  when: mysql_dump_file|default(false)

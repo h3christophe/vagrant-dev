@@ -1,4 +1,7 @@
 ---
+# no need to be changed - used by other roles to check if apache was installed.
+apache_installed: true 
+
 apache_public_folder: "public"
 
 apache_packages:
