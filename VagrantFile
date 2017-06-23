@@ -9,19 +9,39 @@ require 'pathname'
 #to use the Vagrant Cloud and other newer Vagrant features.
 Vagrant.require_version ">= 1.5"
 
-# Check to determine whether we're on a windows or linux/os-x host,
-# later on we use this to launch ansible in the supported way
-# source: https://stackoverflow.com/questions/2108727/which-in-ruby-checking-if-program-exists-in-path-from-ruby
-def which(cmd)
-    exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
-    ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-        exts.each { |ext|
-            exe = File.join(path, "#{cmd}#{ext}")
-            return exe if File.executable? exe
-        }
+# Windows / Linux or mac ?
+module OS
+    def OS.windows?
+        (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
     end
-    return nil
+
+    def OS.mac?
+        (/darwin/ =~ RUBY_PLATFORM) != nil
+    end
+
+    def OS.unix?
+        !OS.windows?
+    end
+
+    def OS.linux?
+        OS.unix? and not OS.mac?
+    end
 end
+
+#is_windows_host = "#{OS.windows?}"
+#puts "is_windows_host: #{OS.windows?}"
+if OS.windows?
+    puts "Vagrant launched from windows."
+elsif OS.mac?
+    puts "Vagrant launched from mac."
+elsif OS.unix?
+    puts "Vagrant launched from unix."
+elsif OS.linux?
+    puts "Vagrant launched from linux."
+else
+    puts "Vagrant launched from unknown platform."
+end
+
 
 # Auto NetworkDefault Pool
 # If you want to change the default pool you will need to manually clear the cache 
@@ -118,13 +138,13 @@ SCRIPT
             # Sync Folders
             # ============
             guest_www_folder = "/var/www/"+hostname
-            node.vm.synced_folder source_www, guest_www_folder, id: "www", :nfs => true
+            node.vm.synced_folder source_www, guest_www_folder, id: "www",  type: "nfs"
             
             syncFolders = settings['sync'] ?  settings['sync'] : false
             if(syncFolders)
                 syncFolders.each do |folder_info|
                     #print folder_info
-                    node.vm.synced_folder folder_info['host'], folder_info['guest'], id: folder_info['id'], :nfs => true
+                    node.vm.synced_folder folder_info['host'], folder_info['guest'], id: folder_info['id'], type: (OS.unix? ? "nfs" : "smb")
                 end
             end
 

@@ -27,5 +27,5 @@ sync:
 # Provisioning
 ansible: true
 # This is a Guest Folder Path.
-ansible_guest_playbook: /vagrant/examples/ansible/LAMP-7.1.yml
-#ansible_guest_playbook: /var/www/envoi.dev/ansible-playbook.yml
+ansible_playbook: /vagrant/examples/ansible/LAMP-7.1.yml
+#ansible_playbook: /var/www/envoi.dev/ansible-playbook.yml
