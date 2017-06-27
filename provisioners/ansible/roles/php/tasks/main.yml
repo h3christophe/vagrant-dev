@@ -10,9 +10,21 @@
   become: true
   apt: update_cache=yes
 
-#- set_fact: php_packages="{% for version in php_versions %} {% for module in php_modules %}php{{version}}-{{module}} {%endfor%} php{{version}} {%endfor%}"     
 
-# Install Module First as If we install php  version first it will include apache module all the time
+# Install PHP version with -cli so apache modules are not enabled by default
+- name: Install PHP Versions
+  become: true
+  apt: pkg="php{{item}}-cli" state=latest
+  with_items: "{{php_versions}}"
+  
+# If Apache - we want to install "libapache2-mod-php{{version}}"
+- name: Install Apache PHP Modules
+  become: true
+  apt: pkg="libapache2-mod-php{{item}}" state=latest
+  with_items: "{{php_versions}}"
+  when: apache_installed is defined
+  
+# Install PHP  Modules
 - name: Install PHP Modules
   become: true
   apt: pkg="php{{item[0]}}-{{item[1]}}" state=latest
@@ -21,50 +33,20 @@
     - "{{php_versions}}"
     - "{{php_modules}}"
  
-- name: Install PHP Versions
+ 
+# PHP Configuration 
+- name: Create the configurations file
   become: true
-  apt: pkg="php{{item}}" state=latest
-  with_items: "{{php_versions}}"
-  
-#- name: Install PHP Versions
-#  become: true
-#  apt: pkg="php{{item}}-cli" state=latest
-#  with_items: "{{php_versions}}"
-  
-# always nuke the file.
-- name: Create/ Reset PHP Ini Options
-  become: true
-  copy:
-    content: ""
-    dest: "/etc/php/{{item[1]}}/{{item[0]}}/conf.d/99-custom.ini"
-    force: yes
-    owner: root
-    mode: 0644
+  template:
+    src: config.conf.tpl
+    dest: "/etc/php/{{item[0]}}/{{item[1]}}/conf.d/99-custom.ini"
+  vars:
+    config: "{{php_config}}"
   with_nested:
+    - "{{php_versions}}" 
     - "{{php_config_dirs}}"
-    - "{{php_versions}}"
-
-#- name: Debug
-#  debug:
-#    msg: "/etc/php/{{item[1]}}/{{item[0]}}/conf.d/99-custom.ini"
-#  with_nested:
-#    - "{{php_config_dirs}}"
-#    - "{{php_versions}}"
-      
-- name: Configure PHP
-  become: true
   notify:
-    - config changed
-  ini_file:
-    create: true
-    owner: root
-    mode: 0555
-    path: "/etc/php/{{item[1]}}/{{item[0]}}/conf.d/99-custom.ini"
-    section: "{{item[2].section}}"
-    option: "{{item[2].key}}"
-    value: "{{item[2].value}}"
-  with_nested:
-    - "{{php_config_dirs}}"
-    - "{{php_versions}}"
-    - "{{php_ini}}" 
+    - php config changed
+  
+
     

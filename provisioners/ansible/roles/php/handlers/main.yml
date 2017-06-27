@@ -1,19 +1,27 @@
 # Restart FPM service.
 # sudo /usr/sbin/service php{{php_version}}-fpm restart
 
-
-- name: config changed
+- name: php config changed
   become: true
   debug: msg="Config Changed"
   changed_when: True
   notify:
+    - restart apache service
     - restart fpm service
 
-
+# Reload Apache 2 
+- name: restart apache service
+  become: true
+  debug: msg="Config Changed"
+  changed_when: True
+  notify: reload apache
+  when: "'apache2' in php_config_dirs"
+  
+# Reload FPM 
 - name: restart fpm service
   become: true
   service: 
     name: "php{{php_version}}-fpm" 
     enabled: yes 
     state: restarted
-  when: "'fpm' in php_modules"
+  when: "'fpm' in php_config_dirs"

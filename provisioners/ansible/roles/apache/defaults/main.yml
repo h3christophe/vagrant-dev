@@ -4,8 +4,7 @@ apache_installed: true
 
 apache_public_folder: "public"
 
-apache_packages:
-    - libapache2-mod-php
+apache_packages: []
     
 apache_modules:
     - rewrite

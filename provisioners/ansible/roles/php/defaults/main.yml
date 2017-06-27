@@ -14,4 +14,4 @@ php_modules:
     - zip
 php_config_dirs: ['cli', 'apache2', 'fpm']
 
-php_ini: {}
+php_config: {}

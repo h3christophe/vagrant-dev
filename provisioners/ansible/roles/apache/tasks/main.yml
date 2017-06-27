@@ -36,7 +36,7 @@
   fail:
     msg: "Cannot find Custom Configuration File {{www_root}}/{{apache_conf_custom}}"
   when: custom_config_file.skipped is not defined and custom_config_file.stat.exists == false
-  
+
 # Upload the Custom Config File in the right directory
 - name: Create Apache configuration from Custom
   become: true
@@ -50,7 +50,7 @@
     - reload apache
   with_items: "{{ apache_conf_custom }}"
   when: custom_config_file.skipped is not defined and custom_config_file.stat.exists == true
-  
+
 # Add the custom conf to the list of conf to enable if the variable is set
 - name: Adding ansible-custom to enable conf array
   set_fact:
@@ -100,6 +100,10 @@
 # ===============  
 # Set UP Virtual Host.
 # ===============
+- name: disabled default site
+  become: true
+  command: "a2dissite 000-default.conf"
+
 - name: Create Site Virtual Host
   become: true
   template:

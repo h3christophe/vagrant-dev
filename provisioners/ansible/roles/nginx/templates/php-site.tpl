@@ -54,4 +54,13 @@ server {
     location ~ /\.ht {
         deny all;
     }
+    
+    {% if ssl_enabled is defined %}listen 443 ssl;
+    listen [::]:443 ssl;
+    
+    ssl_certificate {{ssl_certs_cert_path}};
+    ssl_certificate_key {{ssl_certs_privkey_path}};
+    
+    {% endif %}
+    
 }
