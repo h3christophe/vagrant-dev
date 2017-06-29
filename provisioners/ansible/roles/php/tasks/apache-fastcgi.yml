@@ -1,0 +1,50 @@
+---
+# Install Apache Fast Cgi and enable mods
+- name: Install Fast CGI
+  become: true
+  apt: pkg="libapache2-mod-fastcgi" state=latest
+  
+- name: Enable actions
+  become: true
+  apache2_module:
+    state: present
+    name: "actions"
+    
+- name: Enable fastcgi
+  become: true
+  apache2_module:
+    state: present
+    name: "fastcgi"
+    
+- name: Install php-fpm
+  become: true
+  apt: pkg="php{{version}}-fpm" state=latest
+  with_items: "{{php_versions}}"
+  loop_control:
+    loop_var: version
+    
+- name: Create Apache Config File For PHP-FastCGI
+  become: true
+  template:
+    src: "apache-fastcgi.conf.tpl"
+    dest: "/etc/apache2/conf-available/php-fastcgi-versions.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - reload apache
+    
+- name: Enable PHP-FastCGI Configuration
+  become: true
+  command:
+    "a2enconf php-fastcgi-versions.conf"
+  register: a2enconf
+  changed_when: "'To activate the new configuration' in a2enconf.stdout"
+  notify:
+    - reload apache
+
+# Add FPm in the php config dirs
+- name: Setting Php Config Dirs
+  set_fact:
+    php_config_dirs: "{{ php_config_dirs + ['fpm']}}"
+  

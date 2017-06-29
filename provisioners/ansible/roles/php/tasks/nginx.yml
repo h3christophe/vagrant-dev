@@ -1,0 +1,10 @@
+---
+# Add FPM folder in the config variable
+- name: Setting Php Config Dirs
+  set_fact:
+    php_config_dirs: "{{ php_config_dirs + ['fpm']}}"
+    
+- name: Install php-fpm
+  become: true
+  apt: pkg="php{{item}}-fpm" state=latest
+  with_items: "{{php_versions}}"

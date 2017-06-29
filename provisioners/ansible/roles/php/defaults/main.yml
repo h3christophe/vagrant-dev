@@ -1,8 +1,10 @@
 ---
+php_installed: true
 php_ppa: ondrej/php
 php_version: 7.1
 php_versions: 
     - 7.1
+
 php_modules: 
     - mbstring
     - mcrypt
@@ -12,6 +14,13 @@ php_modules:
     - curl
     - xml
     - zip
-php_config_dirs: ['cli', 'apache2', 'fpm']
+    
+php_config_dirs: ['cli']
 
 php_config: {}
+
+# PHP Mode
+# 'fastcgi' = will use libapache2-mod-fastcgi 
+# 'module' will use libapache2-mod-php{{php version}}
+#  Nginx always use fastcgi
+php_mode: "module" 

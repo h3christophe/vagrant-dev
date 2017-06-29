@@ -17,15 +17,14 @@
   apt: pkg="php{{item}}-cli" state=latest
   with_items: "{{php_versions}}"
   
-# If Apache - we want to install "libapache2-mod-php{{version}}"
-- name: Install Apache PHP Modules
-  become: true
-  apt: pkg="libapache2-mod-php{{item}}" state=latest
-  with_items: "{{php_versions}}"
-  when: apache_installed is defined
-  
+# Depending on php mode 
+# If Nginx - make sure php-fpm module is insalled 
+# If Apache - we want to install libapache2-mod-php if run as module or libapache2-mod-fastcgi if run as CGI
+- include: "{{item}}.yml"
+  with_items: "{{ apache_installed is defined | ternary( 'apache-' + php_mode,  nginx_installed is defined | ternary('nginx', False)  ) }}" 
+
 # Install PHP  Modules
-- name: Install PHP Modules
+- name: Install Extra PHP Modules
   become: true
   apt: pkg="php{{item[0]}}-{{item[1]}}" state=latest
   when: php_modules is defined
@@ -33,9 +32,8 @@
     - "{{php_versions}}"
     - "{{php_modules}}"
  
- 
 # PHP Configuration 
-- name: Create the configurations file
+- name: Create the configurations files
   become: true
   template:
     src: config.conf.tpl

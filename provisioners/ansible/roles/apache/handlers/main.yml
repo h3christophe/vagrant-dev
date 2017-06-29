@@ -12,3 +12,10 @@
     name: apache2 
     enabled: yes 
     state: reloaded
+    
+- name: enable apache site
+  become: true
+  command: "a2ensite ansible-site.conf"
+  register: a2ensite
+  changed_when: "'To activate the new configuration' in a2ensite.stdout"
+  notify: reload apache

@@ -17,4 +17,4 @@ apache_conf_custom: false
 apache_conf_enable: false
 apache_conf_disable: false
 
-apache_virtual_host: false
+apache_virtual_host: "vhost.conf.tpl"

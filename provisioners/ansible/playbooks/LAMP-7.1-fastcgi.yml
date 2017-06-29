@@ -1,0 +1,61 @@
+---
+- hosts: all
+
+  vars:
+      server_packages: [git, vim, htop, curl]
+      server_timezone: UTC
+      server_locale: en_US.UTF-8
+      
+      apache_public_folder: 'public'
+      apache_packages: []
+      apache_modules:
+            - rewrite
+            - vhost_alias
+            - headers
+            - expires
+            - filter
+            - ssl
+      apache_conf_custom: false
+      apache_conf_enable: false
+      apache_conf_disable: false
+
+      mysql_root_password: root
+      mysql_user: user
+      mysql_password: user
+      
+      php_mode: 'fastcgi'
+      php_version: '7.1'
+      php_versions: ['7.1', '7.0']
+      php_modules: 
+            - mbstring
+            - mcrypt
+            - mysql
+            - gd
+            - intl
+            - curl
+            - xml
+            - zip
+      php_config:
+          php:
+            error_reporting: E_ALL
+            display_errors: On
+          opcache:
+            opcache.enable: 1
+            opcache.memory_consumption: 128
+            opcache.interned_strings_buffer: 8
+            opcache.revalidate_freq: 0
+            opcache.max_accelerated_files: 4000
+            opcache.fast_shutdown: 1
+            opcache.enable_cli: 1
+            opcache.validate_timestamps: 1
+            
+      composer_self_update: true  
+      composer_install_github_oauth: false
+      
+  roles:
+    - server
+    - apache
+    - mysql
+    - php
+    - composer
+    - self-ssl  

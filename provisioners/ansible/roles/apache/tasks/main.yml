@@ -112,12 +112,5 @@
     owner: root
     group: root
     mode: 0644
-  notify: reload apache
-    
-# Enable Site
-- name: Enable Virtual Host
-  become: true
-  command: "a2ensite ansible-site.conf"
-  register: a2ensite
-  changed_when: "'To activate the new configuration' in a2ensite.stdout"
-  notify: reload apache
+  notify:
+    - enable apache site   

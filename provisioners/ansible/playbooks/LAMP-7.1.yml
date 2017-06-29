@@ -1,49 +1,43 @@
 ---
 - hosts: all
-  roles:
-    - role: server
-      server_packages: [git, vim, htop, curl]
-      server_timezone: UTC
-      server_locale: en_US.UTF-8
-    
-    - role: apache
-      apache_public_folder: 'public'
-      #apache_virtual_host: 'ansible/vhost-test.conf.tpl'
-      apache_packages: []
-      apache_modules:
-            - rewrite
-            - vhost_alias
-            - headers
-            - expires
-            - filter
-            - ssl
-      apache_conf_custom: false
-      apache_conf_enable: false
-      apache_conf_disable: false
-      
-    - role: mysql
-      mysql_root_password: root
-      mysql_user: user
-      mysql_password: user
-      
-    - role: php
-      php_version: '7.1'
-      php_versions: ['7.1']
-      php_modules: 
-            - mbstring
-            - mcrypt
-            - mysql
-            - gd
-            - intl
-            - curl
-            - xml
-            - zip
-      php_config_dirs: ['cli', 'apache2']
-      php_config:
-          php:
+  vars:
+    server_packages: [git, vim, htop, curl]
+    server_timezone: UTC
+    server_locale: en_US.UTF-8
+
+    apache_public_folder: 'public'
+    apache_packages: []
+    apache_modules:
+        - rewrite
+        - vhost_alias
+        - headers
+        - expires
+        - filter
+        - ssl
+    apache_conf_custom: false
+    apache_conf_enable: false
+    apache_conf_disable: false
+
+    mysql_root_password: root
+    mysql_user: user
+    mysql_password: user
+
+    php_version: '7.1'
+    php_versions: ['7.1']
+    php_modules: 
+        - mbstring
+        - mcrypt
+        - mysql
+        - gd
+        - intl
+        - curl
+        - xml
+        - zip
+    php_config:
+        php:
             error_reporting: E_ALL
             display_errors: On
-          opcache:
+        opcache:
             opcache.enable: 1
             opcache.memory_consumption: 128
             opcache.interned_strings_buffer: 8
@@ -53,10 +47,13 @@
             opcache.enable_cli: 1
             opcache.validate_timestamps: 1
 
-    #- role: php-switcher
-    
-    - role: composer
-      composer_self_update: true  
-      composer_install_github_oauth: false
+    composer_self_update: true  
+    composer_install_github_oauth: false
       
-    - role: self-ssl  
+  roles:
+    - server
+    - apache
+    - mysql
+    - php
+    - composer
+    - self-ssl  
