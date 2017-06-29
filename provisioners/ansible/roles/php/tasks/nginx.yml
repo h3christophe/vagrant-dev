@@ -6,5 +6,7 @@
     
 - name: Install php-fpm
   become: true
-  apt: pkg="php{{item}}-fpm" state=latest
+  apt: pkg="php{{version}}-fpm" state=latest
   with_items: "{{php_versions}}"
+  loop_control:
+    loop_var: version

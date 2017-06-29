@@ -23,6 +23,7 @@
         <Directory "/usr/lib/cgi-bin">
             Require all granted
         </Directory>
+        SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
     </IfModule>
     {% endif %}
     
