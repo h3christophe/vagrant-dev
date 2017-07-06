@@ -19,7 +19,8 @@ server {
     
     {% if php_installed is defined %}
     location ~ [^/]\.php(/|$) {
-        fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+        include snippets/fastcgi-php.conf;
+        
         if (!-f $document_root$fastcgi_script_name) {
             return 404;
         }
@@ -27,10 +28,7 @@ server {
         # Mitigate https://httpoxy.org/ vulnerabilities
         fastcgi_param HTTP_PROXY "";
 
-        fastcgi_pass unix:/run/php/php{{php_version}}-fpm.sock;
-        fastcgi_index index.php;
-        include fastcgi.conf;
-        #fastcgi_param SCRIPT_FILENAME $request_filename;
+        fastcgi_pass unix:/run/php/php{{php_version}}-fpm.sock; 
     }
     {% endif %}
 

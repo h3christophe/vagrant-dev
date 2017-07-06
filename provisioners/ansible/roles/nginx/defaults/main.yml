@@ -34,5 +34,5 @@ nginx_user: "{% if ansible_os_family == 'RedHat' or ansible_os_family == 'Suse' 
 nginx_group: "{{nginx_user}}"
 nginx_daemon_mode: "on"
 
-nginx_site_template: php-site.tpl
+nginx_site_template: server.tpl
 
