@@ -5,7 +5,7 @@ server {
     server_name {{hostname}}{% if aliases %} {{aliases|join(' ')}}{% endif %};
     
 
-    root {{www_root}}/{{nginx_public_folder}};
+    root {{nginx_public_folder}};
 
     # Add index.php to the list if you are using PHP
     index{% if php_installed is defined %} index.php{% endif %}{% if python_installed is defined %} index.py{% endif %} index.html index.htm index.nginx-debian.html;

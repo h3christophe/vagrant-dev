@@ -3,10 +3,12 @@
 
 - name: Install Apache Mode PHP Packages
   become: true
-  apt: pkg="libapache2-mod-php{{item}}" state=latest
+  apt: pkg="libapache2-mod-php{{version}}" state=latest
   with_items: "{{php_versions}}"
+  loop_control:
+    loop_var: version
   when: php_mode == 'module'
-  
+   
 - name: Adding apache2 in the config dirs
   set_fact:
     php_config_dirs: "{{ php_config_dirs + ['apache2']}}"

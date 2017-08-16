@@ -1,13 +1,13 @@
     ServerName {{hostname}}
     {% if aliases %}ServerAlias {{aliases|join(' ')}} {% endif %}
    
-    DocumentRoot {{www_root}}/{{apache_public_folder}}
+    DocumentRoot {{apache_public_folder}}
     AllowEncodedSlashes On
     
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
     
-    <Directory {{www_root}}/{{apache_public_folder}}>
+    <Directory {{apache_public_folder}}>
         Options -Indexes +FollowSymLinks
         DirectoryIndex {% if php_installed is defined %}index.php{% endif %}{% if python_installed is defined %} index.py{% endif %} index.html
         Order allow,deny

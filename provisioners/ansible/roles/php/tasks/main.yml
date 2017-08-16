@@ -46,5 +46,13 @@
   notify:
     - php config changed
   
-
-    
+# Session Folders.
+- name: Create Session Folder in /tmp
+  become: true
+  file:
+    path: /tmp/sessions
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0775
+ 

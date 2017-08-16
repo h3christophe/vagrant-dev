@@ -85,8 +85,7 @@ Vagrant.configure("2") do |config|
 
         settings = YAML::load_file(setting_file);
         boxName = settings['name'] ?  settings['name'] : File.basename(setting_file)
-        source_www =  settings['source_www']
-
+        
         if settings['enabled'] === false 
             next
         end
@@ -139,9 +138,6 @@ SCRIPT
             
             # Sync Folders
             # ============
-            guest_www_folder = "/var/www/"+hostname
-            node.vm.synced_folder source_www, guest_www_folder, id: "www",  type: "nfs"
-            
             syncFolders = settings['sync'] ?  settings['sync'] : false
             if(syncFolders)
                 syncFolders.each do |folder_info|
@@ -172,8 +168,7 @@ SCRIPT
                     ansible.extra_vars = { 
                         "ansible_ssh_user" => "vagrant",
                         "hostname" => hostname,
-                        "aliases" => aliases,
-                        "www_root" => guest_www_folder
+                        "aliases" => aliases
                     }
                 end
             else 

@@ -21,6 +21,7 @@
 
 
 - name: make composer executable
+  become: true
   tags: composer file
   file:
     path: "{{ composer_install_dir }}/composer"
@@ -28,6 +29,7 @@
     mode: a+x
   
 - name: update to the latest version
+  become: true
   command: >
     {{ composer_install_dir }}/composer self-update
   register: composer_self_update_out

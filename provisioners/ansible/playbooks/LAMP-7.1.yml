@@ -5,7 +5,7 @@
     server_timezone: UTC
     server_locale: en_US.UTF-8
 
-    apache_public_folder: 'public'
+    apache_public_folder: '/var/www/site/public'
     apache_packages: []
     apache_modules:
         - rewrite
